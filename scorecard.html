@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Score Entry · Bellevue Merchants Golf League</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+  :root {
+    --green: #1a5c2e;
+    --green-light: #2d8a4a;
+    --gold: #c9a84c;
+    --gold-light: #e8c96d;
+    --cream: #f7f3eb;
+    --dark: #0f1f14;
+    --gray: #6b7c6f;
+    --red: #c0392b;
+    --white: #ffffff;
+    --card-bg: #ffffff;
+    --border: #dde8e0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--green);
+    padding: 16px 20px 14px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .league-name {
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--gold);
+    font-size: 22px;
+    letter-spacing: 1px;
+    line-height: 1;
+  }
+  .league-sub {
+    color: rgba(255,255,255,0.6);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .flag-icon {
+    font-size: 28px;
+  }
+
+  /* SELECTION SCREEN */
+  .selection-screen {
+    padding: 24px 16px;
+  }
+  .section-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gray);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+
+  /* WEEK PICKER */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  .week-btn {
+    background: var(--cream);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 4px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--dark);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .week-btn.fun-night {
+    color: var(--gold);
+    border-color: var(--gold);
+    background: #fff9ed;
+  }
+  .week-btn.selected {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+  }
+  .week-btn:active {
+    transform: scale(0.93);
+  }
+
+  /* MATCH LIST */
+  .match-item {
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: var(--cream);
+    border: 2px solid var(--border);
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .match-item:active { transform: scale(0.97); }
+  .match-item.selected {
+    border-color: var(--green);
+    background: #eaf4ee;
+  }
+  .match-side {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+    background: var(--green);
+    color: white;
+  }
+  .match-side.back { background: var(--gold); color: var(--dark); }
+  .match-teams {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--dark);
+  }
+  .match-tt {
+    font-size: 12px;
+    color: var(--gray);
+    margin-top: 2px;
+  }
+
+  /* START BUTTON */
+  .start-btn {
+    width: 100%;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 18px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 8px;
+    box-shadow: 0 4px 16px rgba(26,92,46,0.4);
+  }
+  .start-btn:disabled {
+    background: #ccc;
+    box-shadow: none;
+    opacity: 0.6;
+  }
+  .start-btn:not(:disabled):active { transform: scale(0.97); }
+
+  /* SCORECARD SCREEN */
+  .scorecard-screen { display: none; }
+  .scorecard-screen.active { display: block; }
+  .selection-screen.hidden { display: none; }
+
+  .scorecard-header {
+    background: var(--dark);
+    color: white;
+    padding: 16px 20px;
+  }
+  .scorecard-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+  .scorecard-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    margin-top: 2px;
+  }
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+
+  /* TEAM STRIPS */
+  .team-strips {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--dark);
+  }
+  .team-strip {
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 10px 12px;
+    border-left: 3px solid var(--gold);
+  }
+  .team-strip.team-b { border-left-color: #5bc4f5; }
+  .team-strip-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gold);
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+  .team-strip.team-b .team-strip-label { color: #5bc4f5; }
+  .team-strip-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    line-height: 1.2;
+  }
+  .team-strip-players {
+    font-size: 11px;
+    color: rgba(255,255,255,0.55);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+
+  /* HOLE CARDS */
+  .holes-container {
+    padding: 12px 16px 100px;
+  }
+  .hole-card {
+    background: var(--card-bg);
+    border-radius: 14px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+  .hole-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--green);
+    color: white;
+  }
+  .hole-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 1px;
+    color: var(--gold);
+  }
+  .hole-par {
+    font-size: 12px;
+    font-weight: 600;
+    background: rgba(255,255,255,0.2);
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .hole-hdcp {
+    font-size: 11px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .score-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 0;
+  }
+  .score-col {
+    padding: 10px 8px;
+    border-right: 1px solid var(--border);
+    text-align: center;
+  }
+  .score-col:last-child { border-right: none; }
+  .score-col-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--gray);
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .score-col.team-a .score-col-label { color: var(--green); }
+  .score-col.team-b .score-col-label { color: #1a85cc; }
+
+  .score-input {
+    width: 100%;
+    height: 46px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-size: 22px;
+    font-weight: 700;
+    font-family: 'DM Sans', sans-serif;
+    text-align: center;
+    color: var(--dark);
+    background: var(--cream);
+    outline: none;
+    -webkit-appearance: none;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .score-input:focus {
+    border-color: var(--green);
+    background: white;
+  }
+  .score-input.over-par { color: var(--red); }
+  .score-input.under-par { color: var(--green-light); }
+  .score-input.on-par { color: var(--dark); }
+
+  /* RUNNING TOTAL BAR */
+  .totals-bar {
+    background: var(--dark);
+    color: white;
+    padding: 10px 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 0;
+    text-align: center;
+    border-top: 2px solid var(--gold);
+  }
+  .total-col { padding: 4px; }
+  .total-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 2px;
+  }
+  .total-val {
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+  }
+  .total-val.team-a-color { color: var(--gold-light); }
+  .total-val.team-b-color { color: #5bc4f5; }
+
+  /* SUBMIT AREA */
+  .submit-area {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    background: white;
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+    z-index: 50;
+  }
+  .submit-btn {
+    width: 100%;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 18px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 4px 16px rgba(26,92,46,0.4);
+  }
+  .submit-btn:active { transform: scale(0.97); }
+  .submit-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--gray);
+    margin-top: 6px;
+  }
+
+  /* SUCCESS SCREEN */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 60px 24px;
+  }
+  .success-screen.active { display: block; }
+  .success-icon { font-size: 64px; margin-bottom: 20px; }
+  .success-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--green);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .success-sub { color: var(--gray); font-size: 15px; margin-bottom: 32px; }
+  .another-btn {
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 16px 32px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 1px;
+    cursor: pointer;
+  }
+
+  /* LOADING */
+  .loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .loading-overlay.active { display: flex; }
+  .spinner {
+    width: 48px; height: 48px;
+    border: 4px solid rgba(255,255,255,0.3);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { color: white; font-size: 16px; font-weight: 600; }
+
+  /* CONFIG NOTICE */
+  .config-notice {
+    background: #fff3cd;
+    border: 1px solid #ffc107;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 16px;
+    font-size: 13px;
+    color: #856404;
+    line-height: 1.5;
+  }
+  .config-notice strong { display: block; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+
+<!-- ==================== CONFIGURATION ==================== -->
+<script>
+// ⚠️  PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW
+// See the included Apps Script file for setup instructions
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx8VZKQvnM8tR3Lw7bjfqOZagK84oQ8vMgejLwUslfB0NSJx0A5B9Jum4b7LD8AxNSFrQ/exec";
+
+// ==================== LEAGUE DATA ====================
+
+const TEAMS = {
+  1:  { name: "Kathol/Llewellyn",          p1: "Kathol",          h1: 3,  n1: 2,  p2: "Llewellyn",        h2: 5,  n2: 4  },
+  2:  { name: "Cascio/Cascio",             p1: "Brennan Cascio",  h1: 3,  n1: 2,  p2: "Alfie Cascio",     h2: 10, n2: 8  },
+  3:  { name: "Friedenbach/Pribyl",        p1: "Friedenbach",     h1: 5,  n1: 4,  p2: "Pribyl",           h2: 6,  n2: 5  },
+  4:  { name: "Kramer/Oliver",             p1: "Kramer",          h1: 3,  n1: 2,  p2: "Oliver",           h2: 3,  n2: 2  },
+  5:  { name: "Hike/Laughlin",             p1: "Laughlin",        h1: 1,  n1: 1,  p2: "Hike",             h2: 14, n2: 11 },
+  6:  { name: "Bassingthwaighte/Landeen",  p1: "Landeen",         h1: 8,  n1: 6,  p2: "Bassingthwaighte", h2: 17, n2: 14 },
+  7:  { name: "Giff/Kouba",               p1: "Giff",            h1: 14, n1: 11, p2: "Kouba",            h2: 16, n2: 13 },
+  8:  { name: "Tankersley/Wertzberger",    p1: "Wertzberger",     h1: 15, n1: 12, p2: "Tankersley",       h2: 19, n2: 15 },
+  9:  { name: "Keating/Severa",           p1: "Keating",         h1: 15, n1: 12, p2: "Severa",           h2: 15, n2: 12 },
+  10: { name: "Czerwinski/Haase",          p1: "Czerwinski",      h1: 1,  n1: 1,  p2: "Haase",            h2: 14, n2: 11 },
+  11: { name: "Scott/Scott",              p1: "Eric Scott",      h1: 4,  n1: 3,  p2: "Kevin Scott",      h2: 4,  n2: 3  },
+  12: { name: "Hope/Kiviniemi",           p1: "Hope",            h1: 10, n1: 8,  p2: "Kiviniemi",        h2: 14, n2: 11 },
+  13: { name: "Bartling/Friedenbach",     p1: "Friedenbach",     h1: 0,  n1: 0,  p2: "Bartling",         h2: 3,  n2: 2  },
+  14: { name: "Zeleny/Zeleny",            p1: "John Zeleny",     h1: 13, n1: 10, p2: "JJ Zeleny",        h2: 17, n2: 14 },
+  15: { name: "Dowling/Wright",           p1: "Dowling",         h1: 10, n1: 8,  p2: "Wright",           h2: 10, n2: 8  },
+  16: { name: "Allen/Gassen",             p1: "Gassen",          h1: 8,  n1: 6,  p2: "Allen",            h2: 11, n2: 9  },
+  17: { name: "Weibel/Wiese",             p1: "Weibel",          h1: 10, n1: 8,  p2: "Wiese",            h2: 14, n2: 11 },
+  18: { name: "Weber/Woodle",             p1: "Grass",           h1: 5,  n1: 4,  p2: "Woodle",           h2: 6,  n2: 5  },
+  19: { name: "Bradley/Jackson",          p1: "Jackson",         h1: 1,  n1: 1,  p2: "Bradley",          h2: 14, n2: 11 },
+  20: { name: "Hilt/Oehlerking",          p1: "Hilt",            h1: 9,  n1: 7,  p2: "Oehlerking",       h2: 14, n2: 11 },
+  21: { name: "Campbell/Chandler",        p1: "Chandler",        h1: 4,  n1: 3,  p2: "Campbell",         h2: 9,  n2: 7  },
+  22: { name: "Dubbs/Marshall Jr",        p1: "Dubbs",           h1: 8,  n1: 6,  p2: "Marshall Jr",      h2: 19, n2: 15 },
+  23: { name: "Grad/Towles",              p1: "Grad",            h1: 4,  n1: 3,  p2: "Towles",           h2: 8,  n2: 6  },
+  24: { name: "STARLIN/Shultz",           p1: "STARLIN",         h1: 4,  n1: 3,  p2: "Shultz",           h2: 7,  n2: 6  },
+  25: { name: "Hike/Vail",               p1: "Jason Hike",      h1: 15, n1: 12, p2: "Vail",             h2: 15, n2: 12 },
+  26: { name: "Lirette/Pichler",          p1: "Lirette",         h1: 6,  n1: 5,  p2: "Pichler",          h2: 26, n2: 21 },
+  27: { name: "Clark/WHEELER",            p1: "WHEELER",         h1: 10, n1: 8,  p2: "Clark",            h2: 17, n2: 14 },
+  28: { name: "Baldwin/Baldwin",          p1: "Rick Baldwin",    h1: 11, n1: 9,  p2: "Tommy Baldwin",    h2: 15, n2: 12 },
+};
+
+// Schedule: [week, side, teeTime, teamAId, teamBId]
+const SCHEDULE = [
+  [1,"Front",1,1,13],[1,"Front",2,6,14],[1,"Front",3,2,11],[1,"Front",4,5,9],[1,"Front",5,10,8],[1,"Front",6,7,12],[1,"Front",7,3,4],
+  [1,"Back",1,17,26],[1,"Back",2,16,18],[1,"Back",3,21,28],[1,"Back",4,20,27],[1,"Back",5,15,23],[1,"Back",6,24,19],[1,"Back",7,22,25],
+  [2,"Front",1,24,28],[2,"Front",2,19,22],[2,"Front",3,18,21],[2,"Front",4,25,27],[2,"Front",5,23,20],[2,"Front",6,15,17],[2,"Front",7,16,26],
+  [2,"Back",1,1,7],[2,"Back",2,5,14],[2,"Back",3,3,8],[2,"Back",4,10,4],[2,"Back",5,11,12],[2,"Back",6,2,6],[2,"Back",7,13,9],
+  [3,"Front",1,2,1],[3,"Front",2,12,6],[3,"Front",3,8,9],[3,"Front",4,4,7],[3,"Front",5,5,13],[3,"Front",6,14,3],[3,"Front",7,10,11],
+  [3,"Back",1,25,19],[3,"Back",2,18,27],[3,"Back",3,24,21],[3,"Back",4,22,17],[3,"Back",5,26,23],[3,"Back",6,28,16],[3,"Back",7,15,20],
+  [4,"Front",1,24,17],[4,"Front",2,16,23],[4,"Front",3,27,15],[4,"Front",4,26,25],[4,"Front",5,18,22],[4,"Front",6,28,19],[4,"Front",7,21,20],
+  [4,"Back",1,9,1],[4,"Back",2,3,13],[4,"Back",3,5,6],[4,"Back",4,7,11],[4,"Back",5,14,12],[4,"Back",6,10,2],[4,"Back",7,4,8],
+  [5,"Front",1,14,1],[5,"Front",2,3,11],[5,"Front",3,9,10],[5,"Front",4,5,7],[5,"Front",5,6,4],[5,"Front",6,2,13],[5,"Front",7,12,8],
+  [5,"Back",1,20,17],[5,"Back",2,19,21],[5,"Back",3,22,26],[5,"Back",4,27,28],[5,"Back",5,25,16],[5,"Back",6,15,24],[5,"Back",7,18,23],
+  [6,"Front",1,20,25],[6,"Front",2,28,15],[6,"Front",3,17,18],[6,"Front",4,21,26],[6,"Front",5,22,24],[6,"Front",6,27,16],[6,"Front",7,19,23],
+  [6,"Back",1,12,1],[6,"Back",2,7,13],[6,"Back",3,10,3],[6,"Back",4,2,4],[6,"Back",5,5,8],[6,"Back",6,9,14],[6,"Back",7,6,11],
+  [7,"Front",1,1,8],[7,"Front",2,9,2],[7,"Front",3,3,7],[7,"Front",4,6,13],[7,"Front",5,10,14],[7,"Front",6,12,5],[7,"Front",7,11,4],
+  [7,"Back",1,21,16],[7,"Back",2,25,15],[7,"Back",3,17,23],[7,"Back",3,18,26],[7,"Back",4,19,20],[7,"Back",5,27,24],[7,"Back",7,22,28],
+  [8,"Front",1,20,24],[8,"Front",2,22,23],[8,"Front",3,19,15],[8,"Front",4,18,28],[8,"Front",5,17,16],[8,"Front",6,27,26],[8,"Front",7,21,25],
+  [8,"Back",1,1,6],[8,"Back",2,12,4],[8,"Back",3,3,5],[8,"Back",4,7,10],[8,"Back",5,13,14],[8,"Back",6,9,11],[8,"Back",7,2,8],
+  [9,"Front",1,1,5],[9,"Front",2,14,4],[9,"Front",3,10,12],[9,"Front",4,11,13],[9,"Front",5,9,6],[9,"Front",6,2,3],[9,"Front",7,7,8],
+  [9,"Back",1,23,27],[9,"Back",2,25,28],[9,"Back",3,17,21],[9,"Back",4,15,26],[9,"Back",5,24,16],[9,"Back",6,19,18],[9,"Back",7,20,22],
+  [11,"Front",1,1,11],[11,"Front",2,7,9],[11,"Front",3,2,12],[11,"Front",4,4,5],[11,"Front",5,6,3],[11,"Front",6,13,10],[11,"Front",7,8,14],
+  [11,"Back",1,18,24],[11,"Back",2,21,22],[11,"Back",3,20,26],[11,"Back",4,15,16],[11,"Back",5,23,25],[11,"Back",6,17,28],[11,"Back",7,27,19],
+  [12,"Front",1,18,8],[12,"Front",2,2,26],[12,"Front",3,14,20],[12,"Front",4,6,22],[12,"Front",5,3,25],[12,"Front",6,21,5],[12,"Front",7,11,16],
+  [12,"Back",1,1,27],[12,"Back",2,4,9],[12,"Back",3,7,19],[12,"Back",4,15,12],[12,"Back",5,17,10],[12,"Back",6,23,28],[12,"Back",7,13,24],
+  [13,"Front",1,1,19],[13,"Front",2,28,10],[13,"Front",3,23,24],[13,"Front",4,13,4],[13,"Front",5,9,15],[13,"Front",6,17,12],[13,"Front",7,27,7],
+  [13,"Back",1,3,21],[13,"Back",2,20,11],[13,"Back",3,18,2],[13,"Back",4,22,14],[13,"Back",5,8,16],[13,"Back",6,6,25],[13,"Back",7,26,5],
+  [14,"Front",1,7,2],[14,"Front",2,13,25],[14,"Front",3,28,5],[14,"Front",4,19,14],[14,"Front",5,12,22],[14,"Front",6,3,20],[14,"Front",7,11,26],
+  [14,"Back",1,1,17],[14,"Back",2,23,9],[14,"Back",3,4,24],[14,"Back",4,8,27],[14,"Back",5,10,21],[14,"Back",6,16,6],[14,"Back",7,18,15],
+  [15,"Front",1,1,16],[15,"Front",2,10,27],[15,"Front",3,18,9],[15,"Front",4,23,6],[15,"Front",5,21,15],[15,"Front",6,17,4],[15,"Front",7,8,24],
+  [15,"Back",1,14,26],[15,"Back",2,3,12],[15,"Back",3,11,25],[15,"Back",4,2,22],[15,"Back",5,28,13],[15,"Back",6,20,7],[15,"Back",7,19,5],
+  [16,"Front",1,10,22],[16,"Front",2,23,4],[16,"Front",3,28,20],[16,"Front",4,2,19],[16,"Front",5,7,14],[16,"Front",6,12,25],[16,"Front",7,27,13],
+  [16,"Back",1,26,1],[16,"Back",2,24,6],[16,"Back",3,15,3],[16,"Back",4,21,8],[16,"Back",5,18,11],[16,"Back",6,17,5],[16,"Back",7,9,16],
+  [17,"Front",1,1,18],[17,"Front",2,17,8],[17,"Front",3,5,16],[17,"Front",4,11,15],[17,"Front",5,24,3],[17,"Front",6,9,21],[17,"Front",7,26,6],
+  [17,"Back",1,20,10],[17,"Back",2,28,7],[17,"Back",3,14,27],[17,"Back",4,25,2],[17,"Back",5,19,4],[17,"Back",6,23,12],[17,"Back",7,22,13],
+  [18,"Front",1,8,15],[18,"Front",2,26,19],[18,"Front",3,6,27],[18,"Front",4,28,12],[18,"Front",5,18,25],[18,"Front",6,23,10],[18,"Front",7,14,24],
+  [18,"Back",1,1,3],[18,"Back",2,5,11],[18,"Back",3,16,7],[18,"Back",4,17,13],[18,"Back",5,21,2],[18,"Back",6,4,22],[18,"Back",7,20,9],
+  [19,"Front",1,1,20],[19,"Front",2,21,27],[19,"Front",3,9,26],[19,"Front",4,22,16],[19,"Front",5,11,23],[19,"Front",6,3,18],[19,"Front",7,25,17],
+  [19,"Back",1,10,6],[19,"Back",2,2,5],[19,"Back",3,28,4],[19,"Back",4,8,13],[19,"Back",5,19,12],[19,"Back",6,15,14],[19,"Back",7,7,24],
+  [20,"Front",1,13,15],[20,"Front",2,5,24],[20,"Front",3,17,19],[20,"Front",4,2,28],[20,"Front",5,20,16],[20,"Front",6,4,21],[20,"Front",7,22,7],
+  [20,"Back",1,1,25],[20,"Back",2,12,9],[20,"Back",3,11,14],[20,"Back",4,8,23],[20,"Back",5,26,10],[20,"Back",6,6,18],[20,"Back",7,3,27],
+];
+
+// Fun nights (weeks 5, 10, 15, 20) use scramble format
+const FUN_NIGHTS = [5, 10, 15, 20];
+
+// Course hole data
+const FRONT_9 = [
+  { hole:1, par:4, hdcp:1 }, { hole:2, par:4, hdcp:3 }, { hole:3, par:3, hdcp:5 },
+  { hole:4, par:4, hdcp:7 }, { hole:5, par:4, hdcp:9 }, { hole:6, par:3, hdcp:2 },
+  { hole:7, par:5, hdcp:4 }, { hole:8, par:4, hdcp:6 }, { hole:9, par:5, hdcp:8 }
+];
+const BACK_9 = [
+  { hole:10, par:4, hdcp:2 }, { hole:11, par:5, hdcp:4 }, { hole:12, par:3, hdcp:6 },
+  { hole:13, par:4, hdcp:8 }, { hole:14, par:3, hdcp:1 }, { hole:15, par:5, hdcp:3 },
+  { hole:16, par:4, hdcp:5 }, { hole:17, par:4, hdcp:7 }, { hole:18, par:4, hdcp:9 }
+];
+</script>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Saving scores to sheet…</div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="league-name">Bellevue Merchants</div>
+      <div class="league-sub">Golf League · Score Entry</div>
+    </div>
+    <div class="flag-icon">⛳</div>
+  </div>
+</div>
+
+<!-- SELECTION SCREEN -->
+<div class="selection-screen" id="selectionScreen">
+  <div id="configNotice"></div>
+  <div style="padding: 24px 16px 8px;">
+    <div class="section-label">Select Week</div>
+    <div class="card" style="padding: 14px;">
+      <div class="week-grid" id="weekGrid"></div>
+    </div>
+
+    <div id="matchSection" style="display:none;">
+      <div class="section-label">Select Your Match</div>
+      <div id="matchList"></div>
+    </div>
+
+    <button class="start-btn" id="startBtn" disabled onclick="startScorecard()">
+      ⛳ Start Scorecard
+    </button>
+  </div>
+</div>
+
+<!-- SCORECARD SCREEN -->
+<div class="scorecard-screen" id="scorecardScreen">
+  <div class="scorecard-header">
+    <button class="back-btn" onclick="goBack()">← Back</button>
+    <div class="scorecard-title" id="scorecardTitle">Week 1 · Match</div>
+    <div class="scorecard-sub" id="scorecardSub"></div>
+  </div>
+
+  <div class="team-strips" id="teamStrips"></div>
+
+  <div style="background: var(--dark);">
+    <div class="totals-bar" id="totalsBar"></div>
+  </div>
+
+  <div class="holes-container" id="holesContainer"></div>
+
+  <div class="submit-area">
+    <button class="submit-btn" onclick="submitScores()">✓ Submit Scores to Sheet</button>
+    <div class="submit-note" id="submitNote">Scores save directly to Google Sheets</div>
+  </div>
+</div>
+
+<!-- SUCCESS SCREEN -->
+<div class="success-screen" id="successScreen">
+  <div class="success-icon">🏆</div>
+  <div class="success-title">Scores Saved!</div>
+  <div class="success-sub" id="successSub">Standings will update on next page load.</div>
+  <button class="another-btn" onclick="resetAll()">Enter Another Scorecard</button>
+</div>
+
+<script>
+// ==================== STATE ====================
+let selectedWeek = null;
+let selectedMatch = null;
+let currentHoles = [];
+let currentTeamA = null;
+let currentTeamB = null;
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', () => {
+  buildWeekGrid();
+
+  if (false) {
+    document.getElementById('configNotice').innerHTML = `
+      <div class="config-notice">
+        <strong>⚠️ Setup Required</strong>
+        This form needs a Google Apps Script URL to save scores to your sheet.
+        See the included <code>google-apps-script.js</code> file for setup instructions.
+      </div>`;
+  }
+});
+
+function buildWeekGrid() {
+  const grid = document.getElementById('weekGrid');
+  grid.innerHTML = '';
+  for (let w = 1; w <= 20; w++) {
+    const isFun = FUN_NIGHTS.includes(w);
+    const btn = document.createElement('button');
+    btn.className = 'week-btn' + (isFun ? ' fun-night' : '');
+    btn.textContent = w;
+    btn.title = isFun ? 'Fun Night Scramble' : `Week ${w}`;
+    btn.onclick = () => selectWeek(w, isFun);
+    grid.appendChild(btn);
+  }
+}
+
+function selectWeek(week, isFun) {
+  selectedWeek = week;
+  selectedMatch = null;
+
+  // Highlight selected
+  document.querySelectorAll('.week-btn').forEach((b, i) => {
+    b.classList.toggle('selected', i + 1 === week);
+  });
+
+  document.getElementById('startBtn').disabled = true;
+
+  if (isFun) {
+    document.getElementById('matchSection').style.display = 'none';
+    document.getElementById('matchList').innerHTML = `
+      <div class="card" style="text-align:center;color:var(--gold);padding:24px;">
+        <div style="font-size:28px;margin-bottom:8px;">⭐</div>
+        <div style="font-weight:700;">Fun Night Scramble</div>
+        <div style="font-size:13px;color:var(--gray);margin-top:4px;">Enter scramble scores directly in Google Sheets for Week ${week}.</div>
+      </div>`;
+    document.getElementById('matchSection').style.display = 'block';
+    return;
+  }
+
+  buildMatchList(week);
+}
+
+function buildMatchList(week) {
+  const matches = SCHEDULE.filter(m => m[0] === week);
+  const list = document.getElementById('matchList');
+  list.innerHTML = '';
+
+  // Separate front and back
+  const front = matches.filter(m => m[1] === 'Front');
+  const back = matches.filter(m => m[1] === 'Back');
+
+  const addMatches = (arr, side) => {
+    arr.forEach((m, idx) => {
+      const [, , tt, aId, bId] = m;
+      const teamA = TEAMS[aId];
+      const teamB = TEAMS[bId];
+      const key = `${week}-${side}-${tt}`;
+      const div = document.createElement('div');
+      div.className = 'match-item';
+      div.id = `match-${key}`;
+      div.innerHTML = `
+        <span class="match-side ${side === 'Back' ? 'back' : ''}">${side} 9</span>
+        <div class="match-teams">${teamA.name} <span style="color:var(--gray);font-weight:400;">vs</span> ${teamB.name}</div>
+        <div class="match-tt">Tee Time ${tt}</div>
+      `;
+      div.onclick = () => selectMatch(week, side, tt, aId, bId, key, div);
+      list.appendChild(div);
+    });
+  };
+
+  if (front.length) addMatches(front, 'Front');
+  if (back.length) addMatches(back, 'Back');
+
+  document.getElementById('matchSection').style.display = 'block';
+}
+
+function selectMatch(week, side, tt, aId, bId, key, el) {
+  selectedMatch = { week, side, tt, aId, bId, key };
+  document.querySelectorAll('.match-item').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('startBtn').disabled = false;
+}
+
+function startScorecard() {
+  if (!selectedMatch) return;
+  const { week, side, tt, aId, bId } = selectedMatch;
+  const teamA = TEAMS[aId];
+  const teamB = TEAMS[bId];
+  currentTeamA = teamA;
+  currentTeamB = teamB;
+  currentHoles = side === 'Front' ? FRONT_9 : BACK_9;
+
+  // Header
+  document.getElementById('scorecardTitle').textContent = `Week ${week} · ${side} 9 · TT${tt}`;
+  document.getElementById('scorecardSub').textContent = `${teamA.name} vs ${teamB.name}`;
+
+  // Team strips
+  document.getElementById('teamStrips').innerHTML = `
+    <div class="team-strip">
+      <div class="team-strip-label">Team A</div>
+      <div class="team-strip-name">${teamA.name}</div>
+      <div class="team-strip-players">${teamA.p1} (hdcp ${teamA.h1})<br>${teamA.p2} (hdcp ${teamA.h2})</div>
+    </div>
+    <div class="team-strip team-b">
+      <div class="team-strip-label">Team B</div>
+      <div class="team-strip-name">${teamB.name}</div>
+      <div class="team-strip-players">${teamB.p1} (hdcp ${teamB.h1})<br>${teamB.p2} (hdcp ${teamB.h2})</div>
+    </div>
+  `;
+
+  // Totals bar
+  updateTotals();
+
+  // Hole cards
+  buildHoleCards();
+
+  // Switch screens
+  document.getElementById('selectionScreen').classList.add('hidden');
+  document.getElementById('scorecardScreen').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function buildHoleCards() {
+  const container = document.getElementById('holesContainer');
+  container.innerHTML = '';
+
+  currentHoles.forEach((holeData, idx) => {
+    const { hole, par, hdcp } = holeData;
+    const card = document.createElement('div');
+    card.className = 'hole-card';
+    card.innerHTML = `
+      <div class="hole-header">
+        <div class="hole-num">Hole ${hole}</div>
+        <div class="hole-par">Par ${par}</div>
+        <div class="hole-hdcp">Hdcp ${hdcp}</div>
+      </div>
+      <div class="score-inputs">
+        <div class="score-col team-a">
+          <div class="score-col-label">${shortName(currentTeamA.p1)}</div>
+          <input class="score-input" type="number" inputmode="numeric" min="1" max="15"
+            id="score-${idx}-0" placeholder="" onchange="onScoreChange(${idx},0,${par},this)" oninput="onScoreChange(${idx},0,${par},this)">
+        </div>
+        <div class="score-col team-a">
+          <div class="score-col-label">${shortName(currentTeamA.p2)}</div>
+          <input class="score-input" type="number" inputmode="numeric" min="1" max="15"
+            id="score-${idx}-1" placeholder="" onchange="onScoreChange(${idx},1,${par},this)" oninput="onScoreChange(${idx},1,${par},this)">
+        </div>
+        <div class="score-col team-b">
+          <div class="score-col-label">${shortName(currentTeamB.p1)}</div>
+          <input class="score-input" type="number" inputmode="numeric" min="1" max="15"
+            id="score-${idx}-2" placeholder="" onchange="onScoreChange(${idx},2,${par},this)" oninput="onScoreChange(${idx},2,${par},this)">
+        </div>
+        <div class="score-col team-b">
+          <div class="score-col-label">${shortName(currentTeamB.p2)}</div>
+          <input class="score-input" type="number" inputmode="numeric" min="1" max="15"
+            id="score-${idx}-3" placeholder="" onchange="onScoreChange(${idx},3,${par},this)" oninput="onScoreChange(${idx},3,${par},this)">
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function shortName(name) {
+  const parts = name.split(' ');
+  return parts.length > 1 ? parts[parts.length - 1] : name;
+}
+
+function onScoreChange(holeIdx, playerIdx, par, input) {
+  const val = parseInt(input.value);
+  input.classList.remove('over-par', 'under-par', 'on-par');
+  if (!isNaN(val)) {
+    if (val > par) input.classList.add('over-par');
+    else if (val < par) input.classList.add('under-par');
+    else input.classList.add('on-par');
+
+    // Auto-advance to next hole's first empty input
+    if (playerIdx === 3) {
+      const nextHole = document.getElementById(`score-${holeIdx + 1}-0`);
+      if (nextHole && !nextHole.value) {
+        setTimeout(() => nextHole.focus(), 80);
+      }
+    }
+  }
+  updateTotals();
+}
+
+function updateTotals() {
+  const totals = [0, 0, 0, 0];
+  const counts = [0, 0, 0, 0];
+  currentHoles.forEach((_, hIdx) => {
+    for (let p = 0; p < 4; p++) {
+      const el = document.getElementById(`score-${hIdx}-${p}`);
+      const v = el ? parseInt(el.value) : NaN;
+      if (!isNaN(v)) { totals[p] += v; counts[p]++; }
+    }
+  });
+
+  const labels = [
+    shortName(currentTeamA.p1), shortName(currentTeamA.p2),
+    shortName(currentTeamB.p1), shortName(currentTeamB.p2)
+  ];
+  const classes = ['team-a-color','team-a-color','team-b-color','team-b-color'];
+
+  document.getElementById('totalsBar').innerHTML = totals.map((t, i) => `
+    <div class="total-col">
+      <div class="total-label">${labels[i]}</div>
+      <div class="total-val ${classes[i]}">${counts[i] > 0 ? t : '–'}</div>
+    </div>
+  `).join('');
+}
+
+function goBack() {
+  document.getElementById('scorecardScreen').classList.remove('active');
+  document.getElementById('selectionScreen').classList.remove('hidden');
+  window.scrollTo(0, 0);
+}
+
+async function submitScores() {
+  const scores = [];
+  let missingHoles = [];
+
+  currentHoles.forEach((_, hIdx) => {
+    const holeScores = [];
+    let holeMissing = false;
+    for (let p = 0; p < 4; p++) {
+      const el = document.getElementById(`score-${hIdx}-${p}`);
+      const v = parseInt(el ? el.value : '');
+      if (isNaN(v)) holeMissing = true;
+      holeScores.push(isNaN(v) ? null : v);
+    }
+    if (holeMissing) missingHoles.push(hIdx + 1);
+    scores.push(holeScores);
+  });
+
+  if (missingHoles.length > 0) {
+    const proceed = confirm(`Holes ${missingHoles.join(', ')} have missing scores. Submit anyway?`);
+    if (!proceed) return;
+  }
+
+  const payload = {
+    week: selectedMatch.week,
+    side: selectedMatch.side,
+    teeTime: selectedMatch.tt,
+    teamAId: selectedMatch.aId,
+    teamBId: selectedMatch.bId,
+    scores: scores // [9 holes][4 players]
+  };
+
+  if (false) {
+    // Demo mode: show what would be submitted
+    alert(`Demo Mode — scores ready to submit:\n\n${JSON.stringify(payload, null, 2).substring(0, 400)}...\n\nPaste your Apps Script URL to enable live saving.`);
+    return;
+  }
+
+  document.getElementById('loadingOverlay').classList.add('active');
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await res.json();
+    document.getElementById('loadingOverlay').classList.remove('active');
+
+    if (data.success) {
+      document.getElementById('scorecardScreen').classList.remove('active');
+      document.getElementById('successSub').textContent =
+        `Week ${selectedMatch.week} · ${selectedMatch.side} 9 · ${currentTeamA.name} vs ${currentTeamB.name} — saved!`;
+      document.getElementById('successScreen').classList.add('active');
+    } else {
+      alert('Error saving scores: ' + (data.error || 'Unknown error'));
+    }
+  } catch (err) {
+    document.getElementById('loadingOverlay').classList.remove('active');
+    alert('Could not connect to Google Sheets. Check your Apps Script URL.\n\n' + err.message);
+  }
+}
+
+function resetAll() {
+  selectedWeek = null;
+  selectedMatch = null;
+  currentHoles = [];
+  document.querySelectorAll('.week-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('matchSection').style.display = 'none';
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('successScreen').classList.remove('active');
+  document.getElementById('selectionScreen').classList.remove('hidden');
+  window.scrollTo(0, 0);
+}
+</script>
+
+</body>
+</html>
