@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Player Scores · Bellevue Merchants Golf League</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--green:#1a3a2a;--green2:#2d5a3f;--green3:#3d7a54;--gold:#c8a84b;--gold2:#e8c96a;--cream:#f5f0e8;--white:#ffffff;--gray:#6b7280;--radius:6px;--shadow:0 2px 12px rgba(0,0,0,.12);--red:#c0392b;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--green);min-height:100vh;}
+header{background:var(--green);color:var(--white);padding:48px 24px 40px;text-align:center;position:relative;}
+header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(200,168,75,.18) 0%,transparent 70%);pointer-events:none;}
+.league-badge{display:inline-block;border:1px solid rgba(200,168,75,.4);color:var(--gold2);font-family:'DM Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;padding:4px 14px;border-radius:2px;margin-bottom:16px;}
+header h1{font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:900;line-height:1.1;margin-bottom:8px;}
+header h1 span{color:var(--gold2);}
+.header-meta{color:rgba(255,255,255,.55);font-size:.85rem;}
+nav{background:var(--green2);position:sticky;top:0;z-index:100;border-bottom:2px solid var(--gold);box-shadow:0 2px 8px rgba(0,0,0,.2);}
+nav ul{display:flex;list-style:none;max-width:900px;margin:0 auto;overflow-x:auto;}
+nav ul::-webkit-scrollbar{display:none;}
+nav a{display:block;color:rgba(255,255,255,.75);text-decoration:none;font-size:.82rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:14px 20px;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;}
+nav a:hover,nav a.active{color:var(--gold2);border-bottom-color:var(--gold2);}
+main{max-width:1200px;margin:0 auto;padding:32px 16px 64px;}
+.section-label{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--green3);margin-bottom:6px;}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,4vw,2.2rem);font-weight:700;margin-bottom:6px;}
+.section-desc{color:var(--gray);font-size:.88rem;margin-bottom:24px;}
+hr.divider{border:none;border-top:1px solid rgba(45,90,63,.18);margin:8px 0 28px;}
+.controls{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center;}
+.search-input{flex:1;min-width:200px;max-width:380px;padding:10px 16px;border:2px solid rgba(45,90,63,.2);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--green);background:var(--white);outline:none;}
+.search-input:focus{border-color:var(--green3);}
+.toggle-btn{padding:8px 14px;border:2px solid rgba(45,90,63,.3);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;color:var(--green);background:var(--white);cursor:pointer;transition:all .15s;}
+.toggle-btn.active{background:var(--green);color:var(--white);border-color:var(--green);}
+.table-wrap{overflow-x:auto;border-radius:var(--radius);box-shadow:var(--shadow);}
+table{width:100%;border-collapse:collapse;background:var(--white);font-size:.78rem;}
+thead{background:var(--green);}
+thead th{color:var(--white);font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:9px 6px;text-align:center;white-space:nowrap;}
+thead th.name-col{text-align:left;padding-left:16px;min-width:160px;}
+tbody tr{border-bottom:1px solid rgba(0,0,0,.05);}
+tbody tr:hover{background:rgba(45,90,63,.04);}
+tbody tr.sub-row{background:rgba(200,168,75,.04);}
+tbody tr.sub-row:hover{background:rgba(200,168,75,.09);}
+td{padding:7px 6px;text-align:center;color:var(--green);font-family:'DM Mono',monospace;font-size:.78rem;}
+td.name-col{text-align:left;padding-left:16px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.83rem;white-space:nowrap;}
+td.empty{color:#ddd;}
+.sub-section-header td{background:rgba(200,168,75,.15) !important;color:var(--green2);font-family:'DM Mono',monospace;font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;padding:7px 16px;border-top:2px solid var(--gold);}
+.loading{padding:48px;text-align:center;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);}
+.spinner{width:28px;height:28px;border:3px solid rgba(45,90,63,.15);border-top-color:var(--green3);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.error-msg{padding:32px;text-align:center;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);color:var(--red);}
+.live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(45,90,63,.1);color:var(--green2);font-size:.75rem;font-family:'DM Mono',monospace;padding:4px 10px;border-radius:20px;margin-bottom:16px;}
+.live-dot{width:7px;height:7px;background:#22c55e;border-radius:50%;animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.8);}}
+.sub-tag{font-size:.68rem;color:var(--gray);font-weight:400;font-family:'DM Mono',monospace;}
+.legend{font-size:.75rem;color:var(--gray);margin-top:10px;}
+footer{background:var(--green);color:rgba(255,255,255,.45);text-align:center;font-size:.78rem;padding:20px;font-family:'DM Mono',monospace;letter-spacing:.04em;}
+</style>
+</head>
+<body>
+<header>
+  <div class="league-badge">Est. Bellevue, Nebraska</div>
+  <h1>Bellevue Merchants<br><span>Golf League</span></h1>
+  <p class="header-meta">2026 Season &nbsp;·&nbsp; Player Scores</p>
+</header>
+<nav>
+  <ul>
+    <li><a href="/">Home</a></li>
+    <li><a href="/#roster">Roster</a></li>
+    <li><a href="/#standings">Standings</a></li>
+    <li><a href="/players" class="active">Player Scores</a></li>
+    <li><a href="/scorecard">📱 Scorecard</a></li>
+  </ul>
+</nav>
+<main>
+  <p class="section-label">Individual Stats</p>
+  <h2 class="section-title">Player Scores</h2>
+  <p class="section-desc">Weekly gross and net scores · Pulls live from scorecards · Updates automatically each week</p>
+  <hr class="divider">
+  <div class="live-badge"><span class="live-dot"></span><span id="last-updated">Loading scores…</span></div>
+  <div class="controls">
+    <input class="search-input" type="text" id="searchInput" placeholder="Search player name…" oninput="renderTable()">
+    <button class="toggle-btn active" id="btnGross" onclick="toggle('gross')">Gross</button>
+    <button class="toggle-btn active" id="btnNet" onclick="toggle('net')">Net</button>
+  </div>
+  <div id="loading" class="loading"><div class="spinner"></div>Loading scores from scorecards…</div>
+  <div id="error" class="error-msg" style="display:none"></div>
+  <div id="tableWrap" style="display:none" class="table-wrap"></div>
+  <p class="legend" id="legend" style="display:none">Sub = substitute player who played in place of a regular team member</p>
+</main>
+<footer>Bellevue Merchants Golf League &nbsp;·&nbsp; 2026 Season &nbsp;·&nbsp; Bellevue, Nebraska</footer>
+<script>
+const SHEET_ID = '1v0qmvIDJyyA-4yJNw8OwqxmaPDSYgbfue5o-6Kqb7xE';
+const TOTAL_WEEKS = 20;
+
+// Official roster - defines regular players and their teams
+const ROSTER = [
+  {t:'Kathol/Llewellyn',         p1:'Justin Kathol',          p2:'James Llewellyn'},
+  {t:'Cascio/Cascio',            p1:'Brennan Cascio',         p2:'Alfie Cascio'},
+  {t:'Friedenbach/Pribyl',       p1:'Lee Friedenbach',        p2:'Scott Pribyl'},
+  {t:'Kramer/Oliver',            p1:'Robert Kramer',          p2:'Kevin Oliver'},
+  {t:'Hike/Laughlin',            p1:'Drew Laughlin',          p2:'JR Hike'},
+  {t:'Bassingthwaighte/Landeen', p1:'Dax Landeen',            p2:'Eric Bassingthwaighte'},
+  {t:'Giff/Kouba',               p1:'Marty Giff',             p2:'Tony Kouba'},
+  {t:'Tankersley/Wertzberger',   p1:'Michael Wertzberger',    p2:'Travis Tankersley'},
+  {t:'Keating/Severa',           p1:'Justin Keating',         p2:'Matt Severa'},
+  {t:'Czerwinski/Haase',         p1:'Bob Czerwinski',         p2:'Kyle Haase'},
+  {t:'Scott/Scott',              p1:'Eric Scott',             p2:'Kevin Scott'},
+  {t:'Hope/Kiviniemi',           p1:'Greg Hope',              p2:'Don Kiviniemi'},
+  {t:'Bartling/Friedenbach',     p1:'Len Friedenbach',        p2:'Brian Bartling'},
+  {t:'Zeleny/Zeleny',            p1:'John Zeleny',            p2:'JJ Zeleny'},
+  {t:'Dowling/Wright',           p1:'Michael Dowling',        p2:'Jeremy Wright'},
+  {t:'Allen/Gassen',             p1:'Eric Gassen',            p2:'Michael Allen'},
+  {t:'Weibel/Wiese',             p1:'Jeffrey Weibel',         p2:'Timothy Wiese'},
+  {t:'Weber/Woodle',             p1:'Dan Weber',              p2:'Marc Woodle'},
+  {t:'Bradley/Jackson',          p1:'Darrel Jackson',         p2:'Preston Bradley'},
+  {t:'Hilt/Oehlerking',          p1:'Rich Hilt',              p2:'Oehlerking'},
+  {t:'Campbell/Chandler',        p1:'Nick Chandler',          p2:'Jason Campbell'},
+  {t:'Dubbs/Marshall Jr',        p1:'Andy Dubbs',             p2:'Stephen Marshall Jr'},
+  {t:'Grad/Towles',              p1:'Brian Grad',             p2:'Jamie Towles'},
+  {t:'STARLIN/Shultz',           p1:'Todd Starlin',           p2:'Troy Shultz'},
+  {t:'Hike/Vail',                p1:'Jason Hike',             p2:'Terry Vail'},
+  {t:'Lirette/Pichler',          p1:'Josh Lirette',           p2:'Evan Pichler'},
+  {t:'Clark/WHEELER',            p1:'Mike Wheeler',           p2:'Casey Clark'},
+  {t:'Baldwin/Baldwin',          p1:'Rick Baldwin',           p2:'Tommy Baldwin'},
+];
+
+// Build lookup structures
+const rosterSet = new Set();
+const teamOf = {};
+const rosterOrder = [];
+ROSTER.forEach(({t, p1, p2}) => {
+  [p1,p2].forEach(p => {
+    if (!p) return;
+    rosterSet.add(p.toLowerCase());
+    teamOf[p.toLowerCase()] = t;
+    rosterOrder.push(p.toLowerCase());
+  });
+});
+
+function getDisplayName(rawName, team) {
+  if (!rawName) return null;
+  const n = String(rawName).trim();
+  // Jason Hike on Hike/Laughlin team = JR Hike
+  if (n.toLowerCase() === 'jason hike' && team && String(team).includes('Laughlin')) return 'JR Hike';
+  return n;
+}
+
+function isSubOverride(val) {
+  return val && !String(val).includes('←') && String(val).trim().length > 0;
+}
+
+async function fetchWeek(weekNum) {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent('Week_' + weekNum)}`;
+  try {
+    const res = await fetch(url);
+    const text = await res.text();
+    return JSON.parse(text.replace(/^[^(]+\(/, '').replace(/\);?\s*$/, '')).table;
+  } catch { return null; }
+}
+
+function parseWeek(table, weekNum, playerData, subsData) {
+  if (!table || !table.rows) return;
+  const rows = table.rows;
+  const g = (row, ci) => row.c && row.c[ci] && row.c[ci].v !== undefined ? row.c[ci].v : null;
+
+  for (let ri = 0; ri < rows.length - 1; ri++) {
+    const row = rows[ri];
+    if (!row.c || !row.c[0] || String(row.c[0].v || '').trim() !== 'Team A:') continue;
+
+    const rowA = rows[ri];
+    const rowB = rows[ri + 1];
+    if (!rowB || String(g(rowB, 0) || '').trim() !== 'Team B:') continue;
+
+    const teamA = g(rowA, 1);
+    const teamB = g(rowB, 1);
+
+    const p1n = g(rowA, 3), p2n = g(rowA, 7);
+    const p3n = g(rowB, 3), p4n = g(rowB, 7);
+    const p1s = g(rowA, 17), p2s = g(rowA, 19);
+    const p3s = g(rowB, 17), p4s = g(rowB, 19);
+
+    let totRow = null;
+    for (let ti = ri + 2; ti < Math.min(ri + 15, rows.length); ti++) {
+      if (String(g(rows[ti], 0) || '').trim() === 'TOTALS') { totRow = rows[ti]; break; }
+    }
+    if (!totRow) continue;
+
+    const entries = [
+      {raw: p1n, sub: p1s, team: teamA, pos:'p1', gc:3,  nc:4},
+      {raw: p2n, sub: p2s, team: teamA, pos:'p2', gc:5,  nc:6},
+      {raw: p3n, sub: p3s, team: teamB, pos:'p1', gc:7,  nc:8},
+      {raw: p4n, sub: p4s, team: teamB, pos:'p2', gc:9,  nc:10},
+    ];
+
+    entries.forEach(({raw, sub, team, pos, gc, nc}) => {
+      if (!raw) return;
+      const gross = g(totRow, gc);
+      const net   = g(totRow, nc);
+      if (!gross) return;
+
+      const name = getDisplayName(raw, team);
+      if (!name) return;
+
+      const isSub = isSubOverride(sub);
+      const isRoster = rosterSet.has(name.toLowerCase());
+
+      if (isRoster) {
+        // Regular player
+        if (!playerData[name]) playerData[name] = {};
+        playerData[name][weekNum] = {gross, net};
+        // If they played (not subbed out), record it
+      } else {
+        // Sub player
+        const teamEntry = ROSTER.find(r => r.t === team);
+        const subbedFor = teamEntry ? (pos === 'p1' ? teamEntry.p1 : teamEntry.p2) : null;
+        if (!subsData[name]) subsData[name] = {subbedFor, weeks: {}};
+        subsData[name].weeks[weekNum] = {gross, net, subbedFor, team};
+      }
+    });
+  }
+}
+
+let showGross = true, showNet = true;
+let regularPlayers = [], subPlayers = [], weeksWithScores = [];
+
+function toggle(type) {
+  if (type === 'gross') { showGross = !showGross; document.getElementById('btnGross').classList.toggle('active', showGross); }
+  else { showNet = !showNet; document.getElementById('btnNet').classList.toggle('active', showNet); }
+  renderTable();
+}
+
+function renderTable() {
+  const search = (document.getElementById('searchInput').value || '').toLowerCase();
+  const weeks = weeksWithScores;
+
+  let hdr = `<tr><th class="name-col">Player</th>`;
+  weeks.forEach(w => {
+    if (showGross) hdr += `<th>W${w} Gross</th>`;
+    if (showNet)   hdr += `<th>W${w} Net</th>`;
+  });
+  hdr += '</tr>';
+
+  const renderRow = (name, weeksData, isSub, subbedFor) => {
+    if (search && !name.toLowerCase().includes(search)) return '';
+    let row = `<tr class="${isSub ? 'sub-row' : ''}" data-player="${name.toLowerCase()}">`;
+    let nameCell = escHtml(name);
+    if (isSub && subbedFor) nameCell += ` <span class="sub-tag">(sub for ${escHtml(subbedFor)})</span>`;
+    row += `<td class="name-col">${nameCell}</td>`;
+    weeks.forEach(w => {
+      const s = weeksData[w];
+      if (showGross) row += s ? `<td>${s.gross}</td>` : `<td class="empty">—</td>`;
+      if (showNet)   row += s ? `<td>${s.net}</td>`   : `<td class="empty">—</td>`;
+    });
+    return row + '</tr>';
+  };
+
+  let body = regularPlayers.map(p => renderRow(p.name, p.weeks, false, null)).join('');
+
+  const visibleSubs = subPlayers.filter(p => !search || p.name.toLowerCase().includes(search));
+  if (visibleSubs.length) {
+    const colspan = 1 + weeks.length * ((showGross?1:0) + (showNet?1:0));
+    body += `<tr class="sub-section-header"><td colspan="${colspan}">Substitute Players</td></tr>`;
+    body += visibleSubs.map(p => renderRow(p.name, p.weeks, true, p.subbedFor)).join('');
+  }
+
+  const wrap = document.getElementById('tableWrap');
+  wrap.innerHTML = `<table><thead>${hdr}</thead><tbody>${body}</tbody></table>`;
+  wrap.style.display = 'block';
+  document.getElementById('legend').style.display = 'block';
+}
+
+async function loadAll() {
+  try {
+    const playerData = {};
+    const subsData = {};
+
+    const results = await Promise.all(
+      Array.from({length: TOTAL_WEEKS}, (_, i) => fetchWeek(i + 1).then(t => ({week: i+1, table: t})))
+    );
+
+    const scored = new Set();
+    results.forEach(({week, table}) => {
+      parseWeek(table, week, playerData, subsData);
+      const hasData = Object.values(playerData).some(w => w[week]) || Object.values(subsData).some(s => s.weeks[week]);
+      if (hasData) scored.add(week);
+    });
+
+    weeksWithScores = Array.from(scored).sort((a,b) => a-b);
+    if (!weeksWithScores.length) weeksWithScores = [1];
+
+    // Build regular players in roster order
+    regularPlayers = rosterOrder
+      .map(lower => {
+        const entry = ROSTER.flatMap(r => [{n:r.p1,t:r.t},{n:r.p2,t:r.t}]).find(e => e.n && e.n.toLowerCase() === lower);
+        if (!entry) return null;
+        return {name: entry.n, weeks: playerData[entry.n] || {}};
+      })
+      .filter(Boolean);
+
+    // Also add anyone in playerData not in roster (edge cases)
+    Object.keys(playerData).forEach(name => {
+      if (!rosterSet.has(name.toLowerCase())) {
+        regularPlayers.push({name, weeks: playerData[name]});
+      }
+    });
+
+    // Build sub players sorted alphabetically
+    subPlayers = Object.entries(subsData).map(([name, data]) => ({
+      name,
+      weeks: data.weeks,
+      subbedFor: data.subbedFor
+    })).sort((a,b) => a.name.localeCompare(b.name));
+
+    document.getElementById('loading').style.display = 'none';
+    renderTable();
+    document.getElementById('last-updated').textContent =
+      'Live · loaded ' + new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+
+  } catch(err) {
+    console.error(err);
+    document.getElementById('loading').style.display = 'none';
+    const el = document.getElementById('error');
+    el.innerHTML = 'Could not load scores. Make sure the sheet is shared publicly.<br><small>' + err.message + '</small>';
+    el.style.display = 'block';
+  }
+}
+
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+loadAll();
+</script>
+</body>
+</html>
