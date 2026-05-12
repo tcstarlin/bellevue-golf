@@ -358,7 +358,7 @@ async function submitScores(){
     scores.push(holeScores);
   });
   if(missingHoles.length>0){const proceed=confirm(`Holes ${missingHoles.join(', ')} have missing scores. Submit anyway?`);if(!proceed) return;}
-  const payload={week:selectedMatch.week,side:selectedMatch.side,teeTime:selectedMatch.tt,teamAId:selectedMatch.aId,teamBId:selectedMatch.bId,scores};
+  const payload={   week: selectedMatch.week,   side: selectedMatch.side,   teeTime: selectedMatch.tt,   teamAId: selectedMatch.aId,   teamBId: selectedMatch.bId,   scores,   handicaps: {     p1: { name: currentTeamA.p1, full: currentTeamA.h1, net: currentTeamA.n1 },     p2: { name: currentTeamA.p2, full: currentTeamA.h2, net: currentTeamA.n2 },     p3: { name: currentTeamB.p1, full: currentTeamB.h1, net: currentTeamB.n1 },     p4: { name: currentTeamB.p2, full: currentTeamB.h2, net: currentTeamB.n2 }   } };,side:selectedMatch.side,teeTime:selectedMatch.tt,teamAId:selectedMatch.aId,teamBId:selectedMatch.bId,scores};
   document.getElementById('loadingOverlay').classList.add('active');
   try{
     // Use no-cors mode — Apps Script doesn't support CORS headers
