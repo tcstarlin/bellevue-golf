@@ -97,15 +97,15 @@ const TEAMS = {
   3:  { name:"Friedenbach/Pribyl",       p1:"Lee Friedenbach",     h1:5,  n1:4,  p2:"Scott Pribyl",           h2:6,  n2:5  },
   4:  { name:"Kramer/Oliver",            p1:"Robert Kramer",       h1:3,  n1:2,  p2:"Kevin Oliver",           h2:3,  n2:2  },
   5:  { name:"Hike/Laughlin",            p1:"Drew Laughlin",       h1:1,  n1:1,  p2:"JR Hike",               h2:14, n2:11 },
-  6:  { name:"Bassingthwaighte/Landeen", p1:"Dax Landeen",         h1:8,  n1:6,  p2:"Eric Bassingthwaighte",  h2:17, n2:14 },
+  6:  { name:"Bassingthwaighte/Landeen", p1:"Dax Landeen",         h1:8,  n1:6,  p2:"Eric Bassingthwaighte",  h2:18, n2:14 },
   7:  { name:"Giff/Kouba",              p1:"Marty Giff",          h1:14, n1:11, p2:"Tony Kouba",             h2:16, n2:13 },
   8:  { name:"Tankersley/Wertzberger",   p1:"Michael Wertzberger", h1:15, n1:12, p2:"Travis Tankersley",      h2:19, n2:15 },
   9:  { name:"Keating/Severa",          p1:"Justin Keating",      h1:15, n1:12, p2:"Matt Severa",            h2:15, n2:12 },
   10: { name:"Czerwinski/Haase",         p1:"Bob Czerwinski",      h1:1,  n1:1,  p2:"Kyle Haase",             h2:14, n2:11 },
-  11: { name:"Scott/Scott",             p1:"Eric Scott",          h1:4,  n1:3,  p2:"Kevin Scott",            h2:4,  n2:3  },
+  11: { name:"Scott/Scott",             p1:"Eric Scott",          h1:4,  n1:3,  p2:"Kevin Scott",            h2:5,  n2:4  },
   12: { name:"Hope/Kiviniemi",          p1:"Greg Hope",           h1:10, n1:8,  p2:"Don Kiviniemi",          h2:14, n2:11 },
   13: { name:"Bartling/Friedenbach",    p1:"Len Friedenbach",     h1:0,  n1:0,  p2:"Brian Bartling",         h2:3,  n2:2  },
-  14: { name:"Zeleny/Zeleny",           p1:"John Zeleny",         h1:13, n1:10, p2:"JJ Zeleny",              h2:17, n2:14 },
+  14: { name:"Zeleny/Zeleny",           p1:"John Zeleny",         h1:13, n1:10, p2:"JJ Zeleny",              h2:18, n2:14 },
   15: { name:"Dowling/Wright",          p1:"Michael Dowling",     h1:10, n1:8,  p2:"Jeremy Wright",          h2:10, n2:8  },
   16: { name:"Allen/Gassen",            p1:"Eric Gassen",         h1:8,  n1:6,  p2:"Michael Allen",          h2:11, n2:9  },
   17: { name:"Weibel/Wiese",            p1:"Jeffrey Weibel",      h1:10, n1:8,  p2:"Timothy Wiese",          h2:14, n2:11 },
@@ -115,11 +115,11 @@ const TEAMS = {
   21: { name:"Campbell/Chandler",       p1:"Nick Chandler",       h1:4,  n1:3,  p2:"Jason Campbell",         h2:9,  n2:7  },
   22: { name:"Dubbs/Marshall Jr",       p1:"Andy Dubbs",          h1:8,  n1:6,  p2:"Stephen Marshall Jr",    h2:19, n2:15 },
   23: { name:"Grad/Towles",             p1:"Brian Grad",          h1:4,  n1:3,  p2:"Jamie Towles",           h2:8,  n2:6  },
-  24: { name:"STARLIN/Shultz",          p1:"Todd Starlin",        h1:4,  n1:3,  p2:"Troy Shultz",            h2:7,  n2:6  },
+  24: { name:"STARLIN/Shultz",          p1:"Todd Starlin",        h1:4,  n1:3,  p2:"Troy Shultz",            h2:8,  n2:6  },
   25: { name:"Hike/Vail",              p1:"Jason Hike",          h1:15, n1:12, p2:"Terry Vail",             h2:15, n2:12 },
   26: { name:"Lirette/Pichler",         p1:"Josh Lirette",        h1:6,  n1:5,  p2:"Evan Pichler",           h2:26, n2:21 },
-  27: { name:"Clark/WHEELER",           p1:"Mike Wheeler",        h1:10, n1:8,  p2:"Casey Clark",            h2:17, n2:14 },
-  28: { name:"Baldwin/Baldwin",         p1:"Rick Baldwin",        h1:11, n1:9,  p2:"Tommy Baldwin",          h2:15, n2:12 },
+  27: { name:"Clark/WHEELER",           p1:"Mike Wheeler",        h1:10, n1:8,  p2:"Casey Clark",            h2:18, n2:14 },
+  28: { name:"Baldwin/Baldwin",         p1:"Rick Baldwin",        h1:11, n1:9,  p2:"Tommy Baldwin",          h2:16, n2:13 },
 };
 
 const SCHEDULE = [
@@ -358,7 +358,7 @@ async function submitScores(){
     scores.push(holeScores);
   });
   if(missingHoles.length>0){const proceed=confirm(`Holes ${missingHoles.join(', ')} have missing scores. Submit anyway?`);if(!proceed) return;}
-  const payload={   week: selectedMatch.week,   side: selectedMatch.side,   teeTime: selectedMatch.tt,   teamAId: selectedMatch.aId,   teamBId: selectedMatch.bId,   scores,   handicaps: {     p1: { name: currentTeamA.p1, full: currentTeamA.h1, net: currentTeamA.n1 },     p2: { name: currentTeamA.p2, full: currentTeamA.h2, net: currentTeamA.n2 },     p3: { name: currentTeamB.p1, full: currentTeamB.h1, net: currentTeamB.n1 },     p4: { name: currentTeamB.p2, full: currentTeamB.h2, net: currentTeamB.n2 }   } };,side:selectedMatch.side,teeTime:selectedMatch.tt,teamAId:selectedMatch.aId,teamBId:selectedMatch.bId,scores};
+  const payload={week:selectedMatch.week,side:selectedMatch.side,teeTime:selectedMatch.tt,teamAId:selectedMatch.aId,teamBId:selectedMatch.bId,scores};
   document.getElementById('loadingOverlay').classList.add('active');
   try{
     // Use no-cors mode — Apps Script doesn't support CORS headers
