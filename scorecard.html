@@ -91,36 +91,38 @@
 // ✅ Updated Apps Script URL
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxFDRoZBOLRKw_pvh4BWzUyFaVzsWnLiigNVMM0AzgGrkJbZXYLcCdMdDlq1NM0EZGpCw/exec";
 
-const TEAMS = {
-  1:  { name:"Kathol/Llewellyn",         p1:"Justin Kathol",       h1:3,  n1:2,  p2:"James Llewellyn",        h2:5,  n2:4  },
-  2:  { name:"Cascio/Cascio",            p1:"Brennan Cascio",      h1:3,  n1:2,  p2:"Alfie Cascio",           h2:10, n2:8  },
-  3:  { name:"Friedenbach/Pribyl",       p1:"Lee Friedenbach",     h1:5,  n1:4,  p2:"Scott Pribyl",           h2:6,  n2:5  },
-  4:  { name:"Kramer/Oliver",            p1:"Robert Kramer",       h1:3,  n1:2,  p2:"Kevin Oliver",           h2:3,  n2:2  },
-  5:  { name:"Hike/Laughlin",            p1:"Drew Laughlin",       h1:1,  n1:1,  p2:"JR Hike",               h2:14, n2:11 },
-  6:  { name:"Bassingthwaighte/Landeen", p1:"Dax Landeen",         h1:8,  n1:6,  p2:"Eric Bassingthwaighte",  h2:18, n2:14 },
-  7:  { name:"Giff/Kouba",              p1:"Marty Giff",          h1:14, n1:11, p2:"Tony Kouba",             h2:16, n2:13 },
-  8:  { name:"Tankersley/Wertzberger",   p1:"Michael Wertzberger", h1:15, n1:12, p2:"Travis Tankersley",      h2:19, n2:15 },
-  9:  { name:"Keating/Severa",          p1:"Justin Keating",      h1:15, n1:12, p2:"Matt Severa",            h2:15, n2:12 },
-  10: { name:"Czerwinski/Haase",         p1:"Bob Czerwinski",      h1:1,  n1:1,  p2:"Kyle Haase",             h2:14, n2:11 },
-  11: { name:"Scott/Scott",             p1:"Eric Scott",          h1:4,  n1:3,  p2:"Kevin Scott",            h2:5,  n2:4  },
-  12: { name:"Hope/Kiviniemi",          p1:"Greg Hope",           h1:10, n1:8,  p2:"Don Kiviniemi",          h2:14, n2:11 },
-  13: { name:"Bartling/Friedenbach",    p1:"Len Friedenbach",     h1:0,  n1:0,  p2:"Brian Bartling",         h2:3,  n2:2  },
-  14: { name:"Zeleny/Zeleny",           p1:"John Zeleny",         h1:13, n1:10, p2:"JJ Zeleny",              h2:18, n2:14 },
-  15: { name:"Dowling/Wright",          p1:"Michael Dowling",     h1:10, n1:8,  p2:"Jeremy Wright",          h2:10, n2:8  },
-  16: { name:"Allen/Gassen",            p1:"Eric Gassen",         h1:8,  n1:6,  p2:"Michael Allen",          h2:11, n2:9  },
-  17: { name:"Weibel/Wiese",            p1:"Jeffrey Weibel",      h1:10, n1:8,  p2:"Timothy Wiese",          h2:14, n2:11 },
-  18: { name:"Weber/Woodle",            p1:"Dan Weber",           h1:5,  n1:4,  p2:"Marc Woodle",            h2:6,  n2:5  },
-  19: { name:"Bradley/Jackson",         p1:"Darrel Jackson",      h1:1,  n1:1,  p2:"Preston Bradley",        h2:14, n2:11 },
-  20: { name:"Hilt/Oehlerking",         p1:"Rich Hilt",           h1:9,  n1:7,  p2:"Oehlerking",             h2:14, n2:11 },
-  21: { name:"Campbell/Chandler",       p1:"Nick Chandler",       h1:4,  n1:3,  p2:"Jason Campbell",         h2:9,  n2:7  },
-  22: { name:"Dubbs/Marshall Jr",       p1:"Andy Dubbs",          h1:8,  n1:6,  p2:"Stephen Marshall Jr",    h2:19, n2:15 },
-  23: { name:"Grad/Towles",             p1:"Brian Grad",          h1:4,  n1:3,  p2:"Jamie Towles",           h2:8,  n2:6  },
-  24: { name:"STARLIN/Shultz",          p1:"Todd Starlin",        h1:4,  n1:3,  p2:"Troy Shultz",            h2:8,  n2:6  },
-  25: { name:"Hike/Vail",              p1:"Jason Hike",          h1:15, n1:12, p2:"Terry Vail",             h2:15, n2:12 },
-  26: { name:"Lirette/Pichler",         p1:"Josh Lirette",        h1:6,  n1:5,  p2:"Evan Pichler",           h2:26, n2:21 },
-  27: { name:"Clark/WHEELER",           p1:"Mike Wheeler",        h1:10, n1:8,  p2:"Casey Clark",            h2:18, n2:14 },
-  28: { name:"Baldwin/Baldwin",         p1:"Rick Baldwin",        h1:11, n1:9,  p2:"Tommy Baldwin",          h2:16, n2:13 },
-};
+// TEAMS loaded live from Roster tab — no need to edit this file when handicaps change
+const SHEET_ID = "1v0qmvIDJyyA-4yJNw8OwqxmaPDSYgbfue5o-6Kqb7xE";
+let TEAMS = {};
+let teamsLoaded = false;
+
+async function loadTeamsFromRoster() {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Roster&range=A3:H30`;
+  try {
+    const res = await fetch(url);
+    const text = await res.text();
+    const json = JSON.parse(text.substr(47).slice(0,-2));
+    const rows = json.table.rows;
+    rows.forEach(row => {
+      const c = row.c;
+      if (!c || !c[0] || c[0].v === null) return;
+      const teamNum = Math.round(c[0].v);
+      const teamName = c[1] ? (c[1].v || '') : '';
+      const p1 = c[2] ? (c[2].v || '') : '';
+      const h1 = c[3] ? (c[3].v || 0) : 0;
+      const n1 = c[4] ? (c[4].v || 0) : 0;
+      const p2 = c[5] ? (c[5].v || '') : '';
+      const h2 = c[6] ? (c[6].v || 0) : 0;
+      const n2 = c[7] ? (c[7].v || 0) : 0;
+      if (teamNum >= 1 && teamNum <= 28) {
+        TEAMS[teamNum] = { name: teamName, p1, h1, n1, p2, h2, n2 };
+      }
+    });
+    teamsLoaded = true;
+  } catch(e) {
+    console.error('Failed to load roster from Google Sheets:', e);
+  }
+}
 
 const SCHEDULE = [
   [1,"Front",1,1,13],[1,"Front",2,6,14],[1,"Front",3,2,11],[1,"Front",4,5,9],[1,"Front",5,10,8],[1,"Front",6,7,12],[1,"Front",7,3,4],
@@ -224,7 +226,10 @@ const BACK_9  = [{hole:10,par:4,hdcp:2},{hole:11,par:5,hdcp:4},{hole:12,par:3,hd
 <script>
 let selectedWeek=null,selectedMatch=null,currentHoles=[],currentTeamA=null,currentTeamB=null;
 
-document.addEventListener('DOMContentLoaded',()=>buildWeekGrid());
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadTeamsFromRoster();
+  buildWeekGrid();
+});
 
 function buildWeekGrid(){
   const grid=document.getElementById('weekGrid');
